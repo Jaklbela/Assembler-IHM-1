@@ -335,3 +335,94 @@ main:
 
 Подтверждающие тесты скриншоты находятся в репозитории в файле Tests.jpg: https://github.com/Jaklbela/Assembler-IHM-1/blob/main/Tests.jpg
 
+## На 5 баллов
+
+### Код на С
+``` C
+#include <stdio.h>
+#include <malloc.h>
+
+int* create_array(int* A, int middle, int size) {
+    int* B = (int*)malloc(sizeof(int) * size);
+    for (int i = 0; i < size; ++i) {
+        if (A[i] > middle) {
+            B[i] = middle;
+        } else {
+            B[i] = A[i];
+        }
+    }
+    return B;
+}
+
+int main(int argc, char** argv) {
+    int n;
+    int* A;
+
+    scanf("%d", &n);
+    A = (int*)malloc(sizeof(int) * n);
+
+    int middle = 0;
+    for (int i = 0; i < n; ++i) {
+        int el;
+        scanf("%d", &el);
+        A[i] = el;
+        middle += el;
+    }
+
+    middle /= n;
+    int* B = create_array(A, middle, n);
+
+    for (int i = 0; i < n; ++i) {
+        printf("%d ", B[i]);
+    }
+
+    return 0;
+}
+```
+
+### Комментарии в новом коде ассемблера
+``` assembly
+create_array:
+	endbr64
+	push	rbp
+	mov	rbp, rsp
+	sub	rsp, 32
+	mov	QWORD PTR -24[rbp], rdi			# передача массива А
+	mov	DWORD PTR -28[rbp], esi			# передача среднего значения
+	mov	DWORD PTR -32[rbp], edx			# передача размера массива
+	mov	eax, DWORD PTR -32[rbp]
+	cdqe
+	sal	rax, 2	
+	mov	rdi, rax	
+	call	malloc@PLT
+	mov	QWORD PTR -16[rbp], rax
+	mov	DWORD PTR -4[rbp], 0
+	jmp	.L2
+.L2:
+	mov	eax, DWORD PTR -4[rbp]
+	cmp	eax, DWORD PTR -32[rbp]
+	jl	.L5
+	mov	rax, QWORD PTR -16[rbp]			# передача массива В из функции в основную программу
+	leave
+	ret
+	.size	create_array, .-create_array
+	.section	.rodata
+.L8:
+	mov	eax, DWORD PTR -36[rbp]
+	cmp	DWORD PTR -8[rbp], eax
+	jl	.L9
+	mov	ecx, DWORD PTR -36[rbp]
+	mov	eax, DWORD PTR -4[rbp]
+	cdq
+	idiv	ecx
+	mov	DWORD PTR -4[rbp], eax
+	mov	edx, DWORD PTR -36[rbp]			# передача массива А в функцию
+	mov	ecx, DWORD PTR -4[rbp]			# передача среднего значения в функцию
+	mov	rax, QWORD PTR -24[rbp]			# передача размера массива в функцию
+	mov	esi, ecx
+	mov	rdi, rax
+	call	create_array				# вызов функции
+	mov	QWORD PTR -32[rbp], rax			# присвоение массиву В возвращаемого значения функции
+	mov	DWORD PTR -12[rbp], 0
+	jmp	.L10
+```
