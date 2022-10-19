@@ -1,4 +1,3 @@
-	.file	"parameters.c"
 	.intel_syntax noprefix
 	.text
 	.globl	create_array
@@ -8,13 +7,13 @@ create_array:
 	push	rbp
 	mov	rbp, rsp
 	sub	rsp, 32
-	mov	QWORD PTR -24[rbp], rdi
-	mov	DWORD PTR -28[rbp], esi
-	mov	DWORD PTR -32[rbp], edx
+	mov	QWORD PTR -24[rbp], rdi			# передача массива А
+	mov	DWORD PTR -28[rbp], esi			# передача среднего значения
+	mov	DWORD PTR -32[rbp], edx			# передача размера массива
 	mov	eax, DWORD PTR -32[rbp]
 	cdqe
-	sal	rax, 2
-	mov	rdi, rax
+	sal	rax, 2	
+	mov	rdi, rax	
 	call	malloc@PLT
 	mov	QWORD PTR -16[rbp], rax
 	mov	DWORD PTR -4[rbp], 0
@@ -55,7 +54,7 @@ create_array:
 	mov	eax, DWORD PTR -4[rbp]
 	cmp	eax, DWORD PTR -32[rbp]
 	jl	.L5
-	mov	rax, QWORD PTR -16[rbp]
+	mov	rax, QWORD PTR -16[rbp]			# передача массива В из функции в основную программу
 	leave
 	ret
 	.size	create_array, .-create_array
@@ -115,13 +114,13 @@ main:
 	cdq
 	idiv	ecx
 	mov	DWORD PTR -4[rbp], eax
-	mov	edx, DWORD PTR -36[rbp]
-	mov	ecx, DWORD PTR -4[rbp]
-	mov	rax, QWORD PTR -24[rbp]
+	mov	edx, DWORD PTR -36[rbp]			# передача массива А в функцию
+	mov	ecx, DWORD PTR -4[rbp]			# передача среднего значения в функцию
+	mov	rax, QWORD PTR -24[rbp]			# передача размера массива в функцию
 	mov	esi, ecx
 	mov	rdi, rax
 	call	create_array
-	mov	QWORD PTR -32[rbp], rax
+	mov	QWORD PTR -32[rbp], rax			# присвоение массиву В возвращаемого значения функции
 	mov	DWORD PTR -12[rbp], 0
 	jmp	.L10
 .L11:
@@ -144,22 +143,3 @@ main:
 	mov	eax, 0
 	leave
 	ret
-	.size	main, .-main
-	.ident	"GCC: (Ubuntu 11.2.0-19ubuntu1) 11.2.0"
-	.section	.note.GNU-stack,"",@progbits
-	.section	.note.gnu.property,"a"
-	.align 8
-	.long	1f - 0f
-	.long	4f - 1f
-	.long	5
-0:
-	.string	"GNU"
-1:
-	.align 8
-	.long	0xc0000002
-	.long	3f - 2f
-2:
-	.long	0x3
-3:
-	.align 8
-4:
